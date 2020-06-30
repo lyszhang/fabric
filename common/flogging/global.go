@@ -41,6 +41,14 @@ func Init(config Config) {
 	}
 }
 
+// Init initializes logging with the provided config.
+func InitLogs(config Config, writers []LogWriter) {
+	err := Global.ApplyLogs(config, writers)
+	if err != nil {
+		panic(err)
+	}
+}
+
 // Reset sets logging to the defaults defined in this package.
 //
 // Used in tests and in the package init

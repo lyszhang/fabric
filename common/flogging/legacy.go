@@ -40,6 +40,26 @@ func InitBackend(formatter logging.Formatter, output io.Writer) {
 	logging.SetBackend(backendFormatter).SetLevel(logging.INFO, "")
 }
 
+// InitBackend sets up the logging backend based on
+// the provided logging formatter and I/O writer.
+type LogWriter struct {
+	Formatter logging.Formatter
+	Output    io.Writer
+	Level     logging.Level
+}
+
+func InitBackendLogs(writers []LogWriter) {
+	var backends []logging.Backend
+	for _, writer := range writers {
+		backend := logging.NewLogBackend(writer.Output, "", 0)
+		backendFormatter := logging.NewBackendFormatter(backend, writer.Formatter)
+		backebdLeveled := logging.AddModuleLevel(backendFormatter)
+		backebdLeveled.SetLevel(writer.Level, "")
+		backends = append(backends, backebdLeveled)
+	}
+	logging.SetBackend(backends...)
+}
+
 // DefaultLevel returns the fallback value for loggers to use if parsing fails.
 func DefaultLevel() string {
 	return strings.ToUpper(Global.DefaultLevel().String())

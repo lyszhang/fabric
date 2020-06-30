@@ -7,7 +7,12 @@ SPDX-License-Identifier: Apache-2.0
 package flogging
 
 import (
+	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
 	"go.uber.org/zap/zapcore"
+	"os"
+	"os/exec"
+	"path"
+	"time"
 )
 
 type Encoding int8
@@ -122,4 +127,28 @@ func addFields(enc zapcore.ObjectEncoder, fields []zapcore.Field) {
 	for i := range fields {
 		fields[i].AddTo(enc)
 	}
+}
+
+func NewWriter(name, appname, suffix string) *rotatelogs.RotateLogs {
+	// 归档日志路径
+	backupPath := path.Join(name, "backup")
+	if _, err := os.Stat(backupPath); err != nil {
+		exec.Command("mkdir", "-p", backupPath).Output()
+	}
+
+	writer, err := rotatelogs.New(
+		path.Join(name, "backup", appname+suffix)+".%Y%m%d.%H",
+		// WithLinkName为最新的日志建立软连接，以方便随着找到当前日志文件
+		rotatelogs.WithLinkName(path.Join(name, appname+suffix)),
+
+		// WithRotationTime设置日志分割的时间，这里设置为一天分割一次
+		rotatelogs.WithRotationTime(time.Hour*24),
+
+		// WithMaxAge设置文件清理前的最长保存时间，
+		rotatelogs.WithMaxAge(time.Hour*24*30),
+	)
+	if err != nil {
+		return nil
+	}
+	return writer
 }

@@ -8,6 +8,7 @@ package common_test
 
 import (
 	"fmt"
+	"github.com/op/go-logging"
 	"os"
 	"path/filepath"
 	"testing"
@@ -197,4 +198,20 @@ func TestInitCmd(t *testing.T) {
 	assert.Equal(t, "fatal", flogging.Global.Level("test.test2").String())
 	assert.Equal(t, "error", flogging.Global.Level("abc").String())
 	os.Setenv("FABRIC_LOGGING_SPEC", origEnvValue)
+}
+
+func TestLogs(t *testing.T) {
+	loggingSpec := os.Getenv("FABRIC_LOGGING_SPEC")
+	loggingFormat := os.Getenv("FABRIC_LOGGING_FORMAT")
+	jsonFormatter := flogging.SetFormat("")
+
+	loggingWriter := flogging.NewWriter("/Users/lyszhang/go/src/github.com/hyperledger/fabric", "peer", "-stdout.log")
+	var writers []flogging.LogWriter
+	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriter, logging.INFO})
+	flogging.InitLogs(flogging.Config{
+		Format:  loggingFormat,
+		LogSpec: loggingSpec,
+	}, writers)
+	var logger = flogging.MustGetLogger("chaincodeCmd")
+	logger.Infof("Using escc")
 }

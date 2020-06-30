@@ -52,7 +52,7 @@ type Logging struct {
 	encoding       Encoding
 	encoderConfig  zapcore.EncoderConfig
 	multiFormatter *fabenc.MultiFormatter
-	writer         zapcore.WriteSyncer
+	writer         []zapcore.WriteSyncer
 	observer       Observer
 }
 
@@ -110,7 +110,35 @@ func (s *Logging) Apply(c Config) error {
 	}
 
 	InitBackend(formatter, c.Writer)
+	return nil
+}
 
+// Apply applies the provided configuration to the logging system.
+func (s *Logging) ApplyLogs(c Config, writers []LogWriter) error {
+	err := s.SetFormat(c.Format)
+	if err != nil {
+		return err
+	}
+
+	if c.LogSpec == "" {
+		c.LogSpec = os.Getenv("FABRIC_LOGGING_SPEC")
+	}
+	if c.LogSpec == "" {
+		c.LogSpec = defaultLevel.String()
+	}
+
+	err = s.LoggerLevels.ActivateSpec(c.LogSpec)
+	if err != nil {
+		return err
+	}
+
+	for _, writer := range writers {
+		if c.Writer == nil {
+			c.Writer = os.Stderr
+		}
+		s.SetWriter(writer.Output)
+	}
+	InitBackendLogs(writers)
 	return nil
 }
 
@@ -160,7 +188,7 @@ func (s *Logging) SetWriter(w io.Writer) {
 	}
 
 	s.mutex.Lock()
-	s.writer = sw
+	s.writer = append(s.writer, sw)
 	s.mutex.Unlock()
 }
 
@@ -180,7 +208,10 @@ func (s *Logging) Write(b []byte) (int, error) {
 	w := s.writer
 	s.mutex.RUnlock()
 
-	return w.Write(b)
+	for _, wchild := range w {
+		wchild.Write(b)
+	}
+	return 0, nil
 }
 
 // Sync satisfies the zapcore.WriteSyncer interface. It is used by the Core to
@@ -190,7 +221,12 @@ func (s *Logging) Sync() error {
 	w := s.writer
 	s.mutex.RUnlock()
 
-	return w.Sync()
+	for _, wchild := range w {
+		if err := wchild.Sync(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Encoding satisfies the Encoding interface. It determines whether the JSON or

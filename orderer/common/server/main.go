@@ -10,12 +10,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/op/go-logging"
 	"io/ioutil"
 	"net"
 	"net/http"
 	_ "net/http/pprof" // This is essentially the main package for the orderer
 	"os"
 	"os/signal"
+	"path"
 	"syscall"
 	"time"
 
@@ -295,12 +297,34 @@ func createReplicator(
 
 func initializeLogging() {
 	loggingSpec := os.Getenv("FABRIC_LOGGING_SPEC")
-	loggingFormat := os.Getenv("FABRIC_LOGGING_FORMAT")
-	flogging.Init(flogging.Config{
-		Format:  loggingFormat,
-		Writer:  os.Stderr,
+	jsonFormatter := flogging.SetFormat("")
+
+	base := os.Getenv("CORE_ORDERER_LOG")
+	if base == "" {
+		base = "/etc/hyperledger/fabric/log"
+	}
+	podname := os.Getenv("HOSTNAME")
+	if podname == "" {
+		podname = "local"
+	}
+	basePath := path.Join(base, podname)
+	loggingWriterErr := flogging.NewWriter(basePath, "orderer", "-error.log")
+	loggingWriterWarn := flogging.NewWriter(basePath, "orderer", "-warn.log")
+	loggingWriterInfo := flogging.NewWriter(basePath, "orderer", "-info.log")
+	loggingWriterDebug := flogging.NewWriter(basePath, "orderer", "-stdout.log")
+	loggingWriterRuntime := flogging.NewWriter(path.Join(basePath, "elk"), "peer", "-runtime.log")
+
+	var writers []flogging.LogWriter
+	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriterErr, logging.ERROR})
+	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriterWarn, logging.WARNING})
+	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriterInfo, logging.INFO})
+	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriterDebug, logging.DEBUG})
+	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriterRuntime, logging.DEBUG})
+
+	flogging.InitLogs(flogging.Config{
+		Format:  "json",
 		LogSpec: loggingSpec,
-	})
+	}, writers)
 }
 
 // Start the profiling service if enabled.

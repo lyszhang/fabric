@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/hyperledger/fabric/common/flogging/fabenc"
 	logging "github.com/op/go-logging"
@@ -56,10 +57,30 @@ type Logging struct {
 	observer       Observer
 }
 
+// NewProductionEncoderConfig returns an opinionated EncoderConfig for
+// production environments.
+func NewBaasEncoderConfig() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:       "timestamp",
+		LevelKey:      "level",
+		NameKey:       "logger",
+		CallerKey:     "caller",
+		MessageKey:    "message",
+		StacktraceKey: "stacktrace",
+		LineEnding:    zapcore.DefaultLineEnding,
+		EncodeLevel:   zapcore.LowercaseLevelEncoder,
+		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+			enc.AppendString(t.Format("2006-01-02T15:04:05.999"))
+		},
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+	}
+}
+
 // New creates a new logging system and initializes it with the provided
 // configuration.
 func New(c Config) (*Logging, error) {
-	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig := NewBaasEncoderConfig()
 	encoderConfig.NameKey = "name"
 
 	s := &Logging{

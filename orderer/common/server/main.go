@@ -301,13 +301,10 @@ func initializeLogging() {
 
 	base := os.Getenv("CORE_ORDERER_LOG")
 	if base == "" {
-		base = "/etc/hyperledger/fabric/log"
+		base = "/opt/baas-logs"
 	}
-	podname := os.Getenv("HOSTNAME")
-	if podname == "" {
-		podname = "local"
-	}
-	basePath := path.Join(base, podname)
+
+	basePath := path.Join(base, flogging.GoNamespace(), "orderer", flogging.GoDeployment())
 	loggingWriterErr := flogging.NewWriter(basePath, "orderer", "-error.log")
 	loggingWriterWarn := flogging.NewWriter(basePath, "orderer", "-warn.log")
 	loggingWriterInfo := flogging.NewWriter(basePath, "orderer", "-info.log")

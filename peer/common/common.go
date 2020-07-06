@@ -296,14 +296,10 @@ func InitCmd(cmd *cobra.Command, args []string) {
 	jsonFormatter := flogging.SetFormat("")
 	base := os.Getenv("CORE_PEER_LOG")
 	if base == "" {
-		base = "/etc/hyperledger/fabric/log"
+		base = "/opt/baas-logs"
 	}
-	podname := os.Getenv("HOSTNAME")
-	if podname == "" {
-		podname = "local"
-	}
-	basePath := path.Join(base, podname)
 
+	basePath := path.Join(base, flogging.GoNamespace(), "orderer", flogging.GoDeployment())
 	loggingWriterErr := flogging.NewWriter(basePath, "peer", "-error.log")
 	loggingWriterWarn := flogging.NewWriter(basePath, "peer", "-warn.log")
 	loggingWriterInfo := flogging.NewWriter(basePath, "peer", "-info.log")

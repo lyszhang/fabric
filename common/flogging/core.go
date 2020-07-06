@@ -152,3 +152,22 @@ func NewWriter(name, appname, suffix string) *rotatelogs.RotateLogs {
 	}
 	return writer
 }
+
+func GoPodname() string {
+	return os.Getenv("POD_NAME")
+}
+
+func GoNamespace() string {
+	return os.Getenv("NAMESPACE")
+}
+
+func GoDeployment() string {
+	return os.Getenv("DEPLOYMENT_NAME")
+}
+
+func GoNodeType() string {
+	if os.Getenv("CORE_PEER_ID") != "" {
+		return "peer"
+	}
+	return "orderer"
+}

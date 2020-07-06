@@ -312,7 +312,7 @@ func initializeLogging() {
 	loggingWriterWarn := flogging.NewWriter(basePath, "orderer", "-warn.log")
 	loggingWriterInfo := flogging.NewWriter(basePath, "orderer", "-info.log")
 	loggingWriterDebug := flogging.NewWriter(basePath, "orderer", "-stdout.log")
-	loggingWriterRuntime := flogging.NewWriter(path.Join(basePath, "elk"), "peer", "-runtime.log")
+	loggingWriterRuntime := flogging.NewWriter(path.Join(basePath, "orderer"), "peer", "-runtime.log")
 
 	var writers []flogging.LogWriter
 	writers = append(writers, flogging.LogWriter{jsonFormatter, loggingWriterErr, logging.ERROR})

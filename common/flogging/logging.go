@@ -308,5 +308,7 @@ func (s *Logging) WriteEntry(e zapcore.Entry, fields []zapcore.Field) {
 // used to determine which log levels are enabled.
 func (s *Logging) Logger(name string) *FabricLogger {
 	zl := s.ZapLogger(name)
-	return NewFabricLogger(zl)
+	logger := NewFabricLogger(zl)
+	logger.With([]zapcore.Field{zap.String("usage", "runtime"), zap.String("type", "fabric")})
+	return logger
 }

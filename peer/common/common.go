@@ -299,7 +299,7 @@ func InitCmd(cmd *cobra.Command, args []string) {
 		base = "/opt/baas-logs"
 	}
 
-	basePath := path.Join(base, flogging.GoNamespace(), "orderer", flogging.GoDeployment())
+	basePath := path.Join(base, flogging.GoNamespace(), "fabric-peer", flogging.GoDeployment())
 	loggingWriterErr := flogging.NewWriter(basePath, "peer", "-error.log")
 	loggingWriterWarn := flogging.NewWriter(basePath, "peer", "-warn.log")
 	loggingWriterInfo := flogging.NewWriter(basePath, "peer", "-info.log")

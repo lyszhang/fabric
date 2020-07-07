@@ -304,7 +304,7 @@ func initializeLogging() {
 		base = "/opt/baas-logs"
 	}
 
-	basePath := path.Join(base, flogging.GoNamespace(), "orderer", flogging.GoDeployment())
+	basePath := path.Join(base, flogging.GoNamespace(), "fabric-orderer", flogging.GoDeployment())
 	loggingWriterErr := flogging.NewWriter(basePath, "orderer", "-error.log")
 	loggingWriterWarn := flogging.NewWriter(basePath, "orderer", "-warn.log")
 	loggingWriterInfo := flogging.NewWriter(basePath, "orderer", "-info.log")

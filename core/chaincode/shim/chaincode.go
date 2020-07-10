@@ -188,7 +188,7 @@ func setupChaincodeLogging() {
 	logFormat := "json"
 
 	formatter := logging.MustStringFormatter(logFormat)
-	backend := logging.NewLogBackend(os.Stderr, "", 0)
+	backend := logging.NewLogBackend(nil, "", 0)
 	backendFormatter := logging.NewBackendFormatter(backend, formatter)
 	logging.SetBackend(backendFormatter).SetLevel(defaultLevel, "")
 

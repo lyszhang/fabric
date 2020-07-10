@@ -131,7 +131,7 @@ func userChaincodeStreamGetter(name string) (PeerChaincodeStream, error) {
 func Start(cc Chaincode) error {
 	// If Start() is called, we assume this is a standalone chaincode and set
 	// up formatted logging.
-	SetupChaincodeLogging()
+	//SetupChaincodeLogging()
 
 	chaincodename := viper.GetString("chaincode.id.name")
 	if chaincodename == "" {

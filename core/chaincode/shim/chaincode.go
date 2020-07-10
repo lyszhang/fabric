@@ -185,10 +185,7 @@ func setupChaincodeLogging() {
 	viper.SetEnvKeyReplacer(replacer)
 
 	// setup process-wide logging backend
-	logFormat := viper.GetString("chaincode.logging.format")
-	if logFormat == "" {
-		logFormat = "json"
-	}
+	logFormat := "json"
 
 	formatter := logging.MustStringFormatter(logFormat)
 	backend := logging.NewLogBackend(os.Stderr, "", 0)

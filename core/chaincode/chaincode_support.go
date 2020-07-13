@@ -103,7 +103,7 @@ func NewChaincodeSupport(
 		CommonEnv: []string{
 			"CORE_CHAINCODE_LOGGING_LEVEL=" + config.LogLevel,
 			"CORE_CHAINCODE_LOGGING_SHIM=" + config.ShimLogLevel,
-			"CORE_CHAINCODE_LOGGING_FORMAT=" + config.LogFormat,
+			"CORE_CHAINCODE_LOGGING_FORMAT=" + "json",
 		},
 	}
 

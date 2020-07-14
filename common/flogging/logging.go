@@ -70,7 +70,7 @@ func NewBaasEncoderConfig() zapcore.EncoderConfig {
 		LineEnding:    zapcore.DefaultLineEnding,
 		EncodeLevel:   zapcore.LowercaseLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format("2006-01-02T15:04:05.999"))
+			enc.AppendString(t.Format("2006-01-02T15:04:05.000"))
 		},
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,

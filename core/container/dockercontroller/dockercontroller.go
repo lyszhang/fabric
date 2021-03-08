@@ -15,6 +15,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -173,6 +174,15 @@ func getDockerHostConfig() *docker.HostConfig {
 	}
 }
 
+/// TODO: 非root用户临时改造
+func getChaincodeRuntimeUser() string {
+	user := os.Getenv("CHAINCODE_RUNTIME_USER")
+	if user == "" {
+		user = "llsuser"
+	}
+	return user
+}
+
 func (vm *DockerVM) createContainer(client dockerClient, imageID, containerID string, args, env []string, attachStdout bool) error {
 	logger := dockerLogger.With("imageID", imageID, "containerID", containerID)
 	logger.Debugw("create container")
@@ -182,6 +192,7 @@ func (vm *DockerVM) createContainer(client dockerClient, imageID, containerID st
 			Cmd:          args,
 			Image:        imageID,
 			Env:          env,
+			User:         getChaincodeRuntimeUser(),
 			AttachStdout: attachStdout,
 			AttachStderr: attachStdout,
 		},

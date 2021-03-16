@@ -117,6 +117,15 @@ type DockerBuildOptions struct {
 	OutputStream io.Writer
 }
 
+/// TODO: 非root用户临时改造
+func getChaincodeRuntimeUser() string {
+	user := os.Getenv("CHAINCODE_RUNTIME_USER")
+	if user == "" {
+		user = "llsuser"
+	}
+	return user
+}
+
 //-------------------------------------------------------------------------------------------
 // DockerBuild
 //-------------------------------------------------------------------------------------------
@@ -175,6 +184,7 @@ func DockerBuild(opts DockerBuildOptions) error {
 		Config: &docker.Config{
 			Image:        opts.Image,
 			Env:          opts.Env,
+			User:         getChaincodeRuntimeUser(),
 			Cmd:          []string{"/bin/sh", "-c", opts.Cmd},
 			AttachStdout: true,
 			AttachStderr: true,

@@ -189,10 +189,10 @@ func (vm *DockerVM) createContainer(client dockerClient, imageID, containerID st
 	_, err := client.CreateContainer(docker.CreateContainerOptions{
 		Name: containerID,
 		Config: &docker.Config{
-			Cmd:          args,
-			Image:        imageID,
-			Env:          env,
-			User:         getChaincodeRuntimeUser(),
+			Cmd:   args,
+			Image: imageID,
+			Env:   env,
+			//User:         getChaincodeRuntimeUser(),
 			AttachStdout: attachStdout,
 			AttachStderr: attachStdout,
 		},

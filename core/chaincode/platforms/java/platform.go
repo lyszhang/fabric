@@ -139,9 +139,8 @@ func (javaPlatform *Platform) GenerateDockerfile() (string, error) {
 	buf = append(buf, "RUN adduser --home /home/llsuser --ingroup llsuser --uid 1024 --disabled-password --disabled"+
 		"-login llsuser")
 	buf = append(buf, "RUN chown -R llsuser:llsuser /root/chaincode-java")
-	buf = append(buf, "ADD binpackage.tar /root/chaincode-java/chaincode")
 	buf = append(buf, "USER llsuser")
-
+	buf = append(buf, "ADD binpackage.tar /root/chaincode-java/chaincode")
 	dockerFileContents := strings.Join(buf, "\n")
 
 	return dockerFileContents, nil

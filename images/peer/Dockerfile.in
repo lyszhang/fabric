@@ -4,7 +4,17 @@
 #
 FROM _BASE_NS_/fabric-baseos:_BASE_TAG_
 ENV FABRIC_CFG_PATH /etc/hyperledger/fabric
+RUN mkdir -p /etc/hyperledger
 RUN mkdir -p /var/hyperledger/production $FABRIC_CFG_PATH
+RUN mkdir -p /host/var
 COPY payload/peer /usr/local/bin
 ADD  payload/sampleconfig.tar.bz2 $FABRIC_CFG_PATH
+
+RUN groupadd -g 993 docker
+RUN groupadd --gid 1024 llsuser     && useradd --home-dir /home/llsuser --create-home --uid 1024         --gid 1024 --shell /bin/sh --skel /dev/null llsuser
+RUN usermod -a -G docker llsuser
+RUN chown -R llsuser:llsuser /etc/hyperledger
+RUN chown -R llsuser:llsuser /var/hyperledger
+RUN chown -R llsuser:llsuser /opt
+RUN chown -R llsuser:llsuser /host/var
 CMD ["peer","node","start"]

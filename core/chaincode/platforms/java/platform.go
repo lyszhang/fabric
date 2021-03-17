@@ -138,8 +138,10 @@ func (javaPlatform *Platform) GenerateDockerfile() (string, error) {
 	buf = append(buf, "RUN addgroup -gid 1024 llsuser")
 	buf = append(buf, "RUN adduser --home /home/llsuser --ingroup llsuser --uid 1024 --disabled-password --disabled"+
 		"-login llsuser")
-	buf = append(buf, "RUN chown -R llsuser:llsuser /root/chaincode-java")
-	buf = append(buf, "ADD --chown=llsuser binpackage.tar /root/chaincode-java/chaincode")
+	buf = append(buf, "ADD binpackage.tar /root/chaincode-java/chaincode")
+	buf = append(buf, "RUN chown -R llsuser.llsuser /root/chaincode-java")
+	buf = append(buf, "RUN chmod 755 /root/chaincode-java/start")
+	buf = append(buf, "RUN chmod 755 /root/chaincode-java/build.sh")
 	buf = append(buf, "USER llsuser")
 	dockerFileContents := strings.Join(buf, "\n")
 

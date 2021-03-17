@@ -184,6 +184,7 @@ func DockerBuild(opts DockerBuildOptions) error {
 		Config: &docker.Config{
 			Image:        opts.Image,
 			Env:          opts.Env,
+			User:        getChaincodeRuntimeUser(),
 			Cmd:          []string{"/bin/sh", "-c", opts.Cmd},
 			AttachStdout: true,
 			AttachStderr: true,

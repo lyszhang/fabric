@@ -17,4 +17,5 @@ RUN chown -R llsuser:llsuser /etc/hyperledger
 RUN chown -R llsuser:llsuser /var/hyperledger
 RUN chown -R llsuser:llsuser /opt
 RUN chown -R llsuser:llsuser /host/var
+USER llsuser
 CMD ["peer","node","start"]
